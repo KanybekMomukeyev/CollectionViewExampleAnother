@@ -217,7 +217,6 @@ static NSString * const BHPhotoEmblemKind = @"Emblem";
     
     frame.origin.y += frame.size.height;
     frame.size.height = self.titleHeight;
-    NSLog(@"suplementary rect = %@",NSStringFromCGRect(frame));
     return frame;
 }
 
