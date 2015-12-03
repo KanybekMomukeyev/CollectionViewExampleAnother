@@ -161,8 +161,8 @@ static NSString * const BHPhotoEmblemKind = @"Emblem";
     [self.layouttInfosArray addObjectsFromArray:allAttributes];
     
     // -------- CONTENT SIZE CALCULATIONS ------------ //
-    NSInteger rowCount = [self.collectionView numberOfSections];
-    //NSInteger rowCount = [self.collectionView numberOfItemsInSection:0];
+    //NSInteger rowCount = [self.collectionView numberOfSections];
+    NSInteger rowCount = [self.collectionView numberOfItemsInSection:0];
     CGFloat height = self.itemInsets.top + rowCount * self.itemSize.height +
                      (rowCount - 1) * self.interItemSpacingY + rowCount * self.titleHeight +
     self.itemInsets.bottom;
@@ -206,23 +206,21 @@ static NSString * const BHPhotoEmblemKind = @"Emblem";
 }
 
 #pragma mark - Private
-
 - (CGRect)frameForAlbumPhotoAtIndexPath:(NSIndexPath *)indexPath
 {
-    NSInteger row = indexPath.section;
-    NSInteger column = indexPath.section % 1;
+    NSInteger row = indexPath.item;
     
-    CGFloat spacingX = self.collectionView.bounds.size.width -
-                       self.itemInsets.left -
-                       self.itemInsets.right -
-                       (self.itemSize.width);
-    
-    CGFloat originX = floorf(self.itemInsets.left + (self.itemSize.width + spacingX) * column);
+    //CGFloat spacingX = self.collectionView.bounds.size.width -
+                       //self.itemInsets.left -
+                       //self.itemInsets.right -
+                       //(self.itemSize.width);
+    //CGFloat originX = floorf(self.itemInsets.left + (self.itemSize.width + spacingX));
     
     CGFloat originY = floor(self.itemInsets.top +
                       (self.itemSize.height + self.titleHeight + self.interItemSpacingY) * row);
     
-    return CGRectMake(originX, originY, self.itemSize.width, self.itemSize.height);
+    CGRect rect = CGRectMake(self.itemInsets.left, originY, self.itemSize.width, self.itemSize.height);
+    return rect;
 }
 
 - (CGRect)frameForAlbumTitleAtIndexPath:(NSIndexPath *)indexPath
@@ -231,6 +229,7 @@ static NSString * const BHPhotoEmblemKind = @"Emblem";
     
     frame.origin.y += frame.size.height;
     frame.size.height = self.titleHeight;
+    NSLog(@"suplementary rect = %@",NSStringFromCGRect(frame));
     return frame;
 }
 

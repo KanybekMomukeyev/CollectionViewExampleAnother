@@ -23,18 +23,13 @@ static NSString * const AlbumTitleIdentifier = @"AlbumTitle";
 @end
 
 @implementation BHCollectionViewController
+
 - (UICollectionView *)collectionView
 {
     if (!_collectionView)
     {
-        self.photoAlbumLayout = [[BHPhotoAlbumLayout alloc] init];
-//      layout.sectionInset = UIEdgeInsetsMake(10, 10, 10, 10);
-//      layout.headerHeight = 15;
-//      layout.footerHeight = 10;
-//      layout.minimumColumnSpacing = 20;
-//      layout.minimumInteritemSpacing = 30;
-//      layout.columnCount = 1;
-        _collectionView = [[UICollectionView alloc] initWithFrame:self.view.bounds collectionViewLayout:self.photoAlbumLayout];
+        _photoAlbumLayout = [[BHPhotoAlbumLayout alloc] init];
+        _collectionView = [[UICollectionView alloc] initWithFrame:self.view.bounds collectionViewLayout:_photoAlbumLayout];
         _collectionView.autoresizingMask = UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleWidth;
         _collectionView.dataSource = self;
         _collectionView.delegate = self;
@@ -48,9 +43,7 @@ static NSString * const AlbumTitleIdentifier = @"AlbumTitle";
     return _collectionView;
 }
 
-
 #pragma mark - Lifecycle
-
 - (void)viewDidLoad
 {
     [super viewDidLoad];
@@ -58,7 +51,7 @@ static NSString * const AlbumTitleIdentifier = @"AlbumTitle";
     self.albums = [NSMutableArray array];
     NSURL *urlPrefix = [NSURL URLWithString:@"https://raw.github.com/ShadoFlameX/PhotoCollectionView/master/Photos/"];
     NSInteger photoIndex = 0;
-    for (NSInteger a = 0; a < 120; a++)
+    for (NSInteger a = 0; a < 100; a++)
     {
         BHAlbum *album = [[BHAlbum alloc] init];
         album.name = @"";
@@ -96,15 +89,12 @@ static NSString * const AlbumTitleIdentifier = @"AlbumTitle";
 #pragma mark - UICollectionViewDataSource
 - (NSInteger)numberOfSectionsInCollectionView:(UICollectionView *)collectionView
 {
-    //return 10;
-    return self.albums.count;
+    return 1;
 }
 
 - (NSInteger)collectionView:(UICollectionView *)collectionView numberOfItemsInSection:(NSInteger)section
 {
-    BHAlbum *album = self.albums[section];
-    return album.photos.count;
-    //return self.albums.count;
+    return self.albums.count;
 }
 
 - (UICollectionViewCell *)collectionView:(UICollectionView *)collectionView
