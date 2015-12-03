@@ -78,11 +78,7 @@ static NSString * const AlbumTitleIdentifier = @"AlbumTitle";
 {
     [self.photoAlbumLayout invalidateLayout];
     if (UIInterfaceOrientationIsLandscape(toInterfaceOrientation)) {
-        CGFloat sideInset = [UIScreen mainScreen].preferredMode.size.width;
-        NSLog(@"sideInset = %@",@(sideInset));
     } else {
-        CGFloat sideInset = [UIScreen mainScreen].preferredMode.size.width;
-        NSLog(@"sideInset = %@",@(sideInset));
     }
 }
 
