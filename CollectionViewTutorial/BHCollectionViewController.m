@@ -38,7 +38,7 @@ static NSString * const AlbumTitleIdentifier = @"AlbumTitle";
         _collectionView.autoresizingMask = UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleWidth;
         _collectionView.dataSource = self;
         _collectionView.delegate = self;
-        _collectionView.backgroundColor = [UIColor whiteColor];
+        _collectionView.backgroundColor = [UIColor greenColor];
         [_collectionView registerClass:[BHAlbumPhotoCell class]
                 forCellWithReuseIdentifier:PhotoCellIdentifier];
         [_collectionView registerClass:[BHAlbumTitleReusableView class]
