@@ -20,9 +20,9 @@ static NSString * const BHPhotoEmblemKind = @"Emblem";
 
 @property (nonatomic, assign) CGSize currentContentSize;
 
-- (CGRect)frameForAlbumPhotoAtIndexPath:(NSIndexPath *)indexPath;
-- (CGRect)frameForAlbumTitleAtIndexPath:(NSIndexPath *)indexPath;
-- (CGRect)frameForEmblem;
+- (CGRect)frameForItemAtIndexPath:(NSIndexPath *)indexPath;
+- (CGRect)frameForSuplementaryAtIndexPath:(NSIndexPath *)indexPath;
+- (CGRect)frameForDecorative;
 
 @end
 
@@ -119,27 +119,26 @@ static NSString * const BHPhotoEmblemKind = @"Emblem";
     NSIndexPath *indexPath = [NSIndexPath indexPathForItem:0 inSection:0];
     UICollectionViewLayoutAttributes *emblemAttributes = [UICollectionViewLayoutAttributes
                                                           layoutAttributesForDecorationViewOfKind:BHPhotoEmblemKind withIndexPath:indexPath];
-    emblemAttributes.frame = [self frameForEmblem];
+    emblemAttributes.frame = [self frameForDecorative];
     newLayoutInfoDict[BHPhotoEmblemKind] = @{indexPath: emblemAttributes};
     
     
     NSInteger itemCount = [self.collectionView numberOfItemsInSection:0];
     for (NSInteger item = 0; item < itemCount; item++) {
         indexPath = [NSIndexPath indexPathForItem:item inSection:0];
-        
+
+        // -------- ITEM ATTRIBUTE CALLCULATION --------- //
         UICollectionViewLayoutAttributes *itemAttributes =
         [UICollectionViewLayoutAttributes layoutAttributesForCellWithIndexPath:indexPath];
-        itemAttributes.frame = [self frameForAlbumPhotoAtIndexPath:indexPath];
+        itemAttributes.frame = [self frameForItemAtIndexPath:indexPath];
         
         cellLayoutInfoDict[indexPath] = itemAttributes;
         
-        if (indexPath.item == 0) {
-            UICollectionViewLayoutAttributes *titleAttributes =
-            [UICollectionViewLayoutAttributes layoutAttributesForSupplementaryViewOfKind:BHPhotoAlbumLayoutAlbumTitleKind withIndexPath:indexPath];
-            titleAttributes.frame = [self frameForAlbumTitleAtIndexPath:indexPath];
-            
-            titleLayoutInfoDict[indexPath] = titleAttributes;
-        }
+        // -------- SUPLEMENTARY ATTRIBUTE CALLCULATION ------------ //
+        UICollectionViewLayoutAttributes *titleAttributes =
+        [UICollectionViewLayoutAttributes layoutAttributesForSupplementaryViewOfKind:BHPhotoAlbumLayoutAlbumTitleKind withIndexPath:indexPath];
+        titleAttributes.frame = [self frameForSuplementaryAtIndexPath:indexPath];
+        titleLayoutInfoDict[indexPath] = titleAttributes;
     }
     
     newLayoutInfoDict[BHPhotoAlbumLayoutPhotoCellKind]  =  cellLayoutInfoDict;
@@ -202,7 +201,7 @@ static NSString * const BHPhotoEmblemKind = @"Emblem";
 }
 
 #pragma mark - Private
-- (CGRect)frameForAlbumPhotoAtIndexPath:(NSIndexPath *)indexPath
+- (CGRect)frameForItemAtIndexPath:(NSIndexPath *)indexPath;
 {
     NSInteger row = indexPath.item;
     CGFloat originY = floor(self.itemInsets.top +
@@ -212,9 +211,9 @@ static NSString * const BHPhotoEmblemKind = @"Emblem";
     return rect;
 }
 
-- (CGRect)frameForAlbumTitleAtIndexPath:(NSIndexPath *)indexPath
+- (CGRect)frameForSuplementaryAtIndexPath:(NSIndexPath *)indexPath;
 {
-    CGRect frame = [self frameForAlbumPhotoAtIndexPath:indexPath];
+    CGRect frame = [self frameForItemAtIndexPath:indexPath];
     
     frame.origin.y += frame.size.height;
     frame.size.height = self.titleHeight;
@@ -222,7 +221,7 @@ static NSString * const BHPhotoEmblemKind = @"Emblem";
     return frame;
 }
 
-- (CGRect)frameForEmblem
+- (CGRect)frameForDecorative;
 {
     CGSize size = [BHEmblemView defaultSize];
     CGFloat originX = floorf((self.collectionView.bounds.size.width - size.width) * 0.5f);
