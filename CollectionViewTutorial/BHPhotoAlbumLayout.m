@@ -162,6 +162,7 @@ static NSString * const BHPhotoEmblemKind = @"Emblem";
     
     // -------- CONTENT SIZE CALCULATIONS ------------ //
     NSInteger rowCount = [self.collectionView numberOfSections];
+    //NSInteger rowCount = [self.collectionView numberOfItemsInSection:0];
     CGFloat height = self.itemInsets.top + rowCount * self.itemSize.height +
                      (rowCount - 1) * self.interItemSpacingY + rowCount * self.titleHeight +
     self.itemInsets.bottom;

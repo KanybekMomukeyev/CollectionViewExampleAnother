@@ -8,6 +8,5 @@
 
 #import <UIKit/UIKit.h>
 
-@interface BHCollectionViewController : UICollectionViewController <UICollectionViewDataSource, UICollectionViewDelegate>
-
+@interface BHCollectionViewController : UIViewController <UICollectionViewDataSource, UICollectionViewDelegate>
 @end

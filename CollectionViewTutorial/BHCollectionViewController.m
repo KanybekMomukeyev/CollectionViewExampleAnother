@@ -17,20 +17,44 @@ static NSString * const PhotoCellIdentifier = @"PhotoCell";
 static NSString * const AlbumTitleIdentifier = @"AlbumTitle";
 
 @interface BHCollectionViewController ()
-
 @property (nonatomic, strong) NSMutableArray *albums;
-@property (nonatomic, weak) IBOutlet BHPhotoAlbumLayout *photoAlbumLayout;
-@property (nonatomic, strong) NSOperationQueue *thumbnailQueue;
-
+@property (nonatomic, strong)   BHPhotoAlbumLayout *photoAlbumLayout;
+@property (nonatomic, strong) UICollectionView *collectionView;
 @end
 
 @implementation BHCollectionViewController
+- (UICollectionView *)collectionView
+{
+    if (!_collectionView)
+    {
+        self.photoAlbumLayout = [[BHPhotoAlbumLayout alloc] init];
+//      layout.sectionInset = UIEdgeInsetsMake(10, 10, 10, 10);
+//      layout.headerHeight = 15;
+//      layout.footerHeight = 10;
+//      layout.minimumColumnSpacing = 20;
+//      layout.minimumInteritemSpacing = 30;
+//      layout.columnCount = 1;
+        _collectionView = [[UICollectionView alloc] initWithFrame:self.view.bounds collectionViewLayout:self.photoAlbumLayout];
+        _collectionView.autoresizingMask = UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleWidth;
+        _collectionView.dataSource = self;
+        _collectionView.delegate = self;
+        _collectionView.backgroundColor = [UIColor whiteColor];
+        [_collectionView registerClass:[BHAlbumPhotoCell class]
+                forCellWithReuseIdentifier:PhotoCellIdentifier];
+        [_collectionView registerClass:[BHAlbumTitleReusableView class]
+                forSupplementaryViewOfKind:BHPhotoAlbumLayoutAlbumTitleKind
+                       withReuseIdentifier:AlbumTitleIdentifier];
+    }
+    return _collectionView;
+}
+
 
 #pragma mark - Lifecycle
 
 - (void)viewDidLoad
 {
     [super viewDidLoad];
+    [self.view addSubview:self.collectionView];
     self.albums = [NSMutableArray array];
     NSURL *urlPrefix = [NSURL URLWithString:@"https://raw.github.com/ShadoFlameX/PhotoCollectionView/master/Photos/"];
     NSInteger photoIndex = 0;
@@ -48,15 +72,6 @@ static NSString * const AlbumTitleIdentifier = @"AlbumTitle";
         
         [self.albums addObject:album];
     }
-    
-    [self.collectionView registerClass:[BHAlbumPhotoCell class]
-            forCellWithReuseIdentifier:PhotoCellIdentifier];
-    [self.collectionView registerClass:[BHAlbumTitleReusableView class]
-            forSupplementaryViewOfKind:BHPhotoAlbumLayoutAlbumTitleKind
-                   withReuseIdentifier:AlbumTitleIdentifier];
-    
-    self.thumbnailQueue = [[NSOperationQueue alloc] init];
-    self.thumbnailQueue.maxConcurrentOperationCount = 3;
 }
 
 - (void)didReceiveMemoryWarning
@@ -64,32 +79,24 @@ static NSString * const AlbumTitleIdentifier = @"AlbumTitle";
     [super didReceiveMemoryWarning];
 }
 
-
 #pragma mark - View Rotation
-
 - (void)willRotateToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation
                                 duration:(NSTimeInterval)duration
 {
     [self.photoAlbumLayout invalidateLayout];
-//    if (UIInterfaceOrientationIsLandscape(toInterfaceOrientation)) {
-//        self.photoAlbumLayout.numberOfColumns = 3;
-//        
-//        // handle insets for iPhone 4 or 5
-//        CGFloat sideInset = [UIScreen mainScreen].preferredMode.size.width == 1136.0f ?
-//                            45.0f : 25.0f;
-//        
-//        self.photoAlbumLayout.itemInsets = UIEdgeInsetsMake(22.0f, sideInset, 13.0f, sideInset);
-//        
-//    } else {
-//        self.photoAlbumLayout.numberOfColumns = 2;
-//        self.photoAlbumLayout.itemInsets = UIEdgeInsetsMake(22.0f, 22.0f, 13.0f, 22.0f);
-//    }
+    if (UIInterfaceOrientationIsLandscape(toInterfaceOrientation)) {
+        CGFloat sideInset = [UIScreen mainScreen].preferredMode.size.width;
+        NSLog(@"sideInset = %@",@(sideInset));
+    } else {
+        CGFloat sideInset = [UIScreen mainScreen].preferredMode.size.width;
+        NSLog(@"sideInset = %@",@(sideInset));
+    }
 }
 
 #pragma mark - UICollectionViewDataSource
-
 - (NSInteger)numberOfSectionsInCollectionView:(UICollectionView *)collectionView
 {
+    //return 10;
     return self.albums.count;
 }
 
@@ -97,6 +104,7 @@ static NSString * const AlbumTitleIdentifier = @"AlbumTitle";
 {
     BHAlbum *album = self.albums[section];
     return album.photos.count;
+    //return self.albums.count;
 }
 
 - (UICollectionViewCell *)collectionView:(UICollectionView *)collectionView
