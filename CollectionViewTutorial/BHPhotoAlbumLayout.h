@@ -8,12 +8,23 @@
 
 #import <UIKit/UIKit.h>
 
-UIKIT_EXTERN NSString * const BHPhotoAlbumLayoutAlbumTitleKind;
+extern NSString * const BHPhotoAlbumLayoutAlbumTitleKind;
+
+@class BHPhotoAlbumLayout;
+
+@protocol GRCollectionViewDelegateLayout <UICollectionViewDelegate>
+@required
+
+- (CGSize)collectionView:(UICollectionView *)collectionView layout:(BHPhotoAlbumLayout *)collectionViewLayout sizeForItemAtIndexPath:(NSIndexPath *)indexPath;
+
+//- (BOOL)collectionView:(UICollectionView *)collectionView layout:(BHPhotoAlbumLayout *)collectionViewLayout sizeForHeaderAtIndexPath:(NSIndexPath *)indexPath;
+
+@end
+
 
 @interface BHPhotoAlbumLayout : UICollectionViewLayout
 
 @property (nonatomic) UIEdgeInsets itemInsets;
-@property (nonatomic) CGSize itemSize;
 @property (nonatomic) CGFloat interItemSpacingY;
 @property (nonatomic) CGFloat titleHeight;
 

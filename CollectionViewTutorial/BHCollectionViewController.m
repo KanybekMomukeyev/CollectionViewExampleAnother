@@ -114,4 +114,12 @@ static NSString * const AlbumTitleIdentifier = @"AlbumTitle";
     return titleView;
 }
 
+- (CGSize)collectionView:(UICollectionView *)collectionView
+                  layout:(UICollectionViewLayout*)collectionViewLayout
+  sizeForItemAtIndexPath:(NSIndexPath *)indexPath
+{
+    //return CGSizeMake(200, arc4random()%300 + 1);
+    return CGSizeMake(200, 200);
+}
+
 @end

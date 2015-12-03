@@ -7,6 +7,6 @@
 //
 
 #import <UIKit/UIKit.h>
-
-@interface BHCollectionViewController : UIViewController <UICollectionViewDataSource, UICollectionViewDelegate>
+#import "BHPhotoAlbumLayout.h"
+@interface BHCollectionViewController : UIViewController <UICollectionViewDataSource, GRCollectionViewDelegateLayout>
 @end

@@ -20,6 +20,8 @@ static NSString * const BHPhotoEmblemKind = @"Emblem";
 
 @property (nonatomic, assign) CGSize currentContentSize;
 
+@property (nonatomic, weak) id <GRCollectionViewDelegateLayout> delegate;
+
 - (CGRect)frameForItemAtIndexPath:(NSIndexPath *)indexPath;
 - (CGRect)frameForSuplementaryAtIndexPath:(NSIndexPath *)indexPath;
 - (CGRect)frameForDecorative;
@@ -28,6 +30,7 @@ static NSString * const BHPhotoEmblemKind = @"Emblem";
 
 @implementation BHPhotoAlbumLayout
 
+#pragma mark - Properties
 - (NSMutableArray *)layouttInfosArray
 {
     if (!_layouttInfosArray) {
@@ -36,22 +39,17 @@ static NSString * const BHPhotoEmblemKind = @"Emblem";
     return _layouttInfosArray;
 }
 
+- (id <GRCollectionViewDelegateLayout> )delegate
+{
+    return (id <GRCollectionViewDelegateLayout> )self.collectionView.delegate;
+}
 
-#pragma mark - Properties
+#pragma mark - Setters
 - (void)setItemInsets:(UIEdgeInsets)itemInsets
 {
     if (UIEdgeInsetsEqualToEdgeInsets(_itemInsets, itemInsets)) return;
     
     _itemInsets = itemInsets;
-    
-    [self invalidateLayout];
-}
-
-- (void)setItemSize:(CGSize)itemSize
-{
-    if (CGSizeEqualToSize(_itemSize, itemSize)) return;
-    
-    _itemSize = itemSize;
     
     [self invalidateLayout];
 }
@@ -100,7 +98,6 @@ static NSString * const BHPhotoEmblemKind = @"Emblem";
 - (void)setup
 {
     self.itemInsets = UIEdgeInsetsMake(22.0f, 22.0f, 13.0f, 22.0f);
-    self.itemSize = CGSizeMake(125.0f, 125.0f);
     self.interItemSpacingY = 20.0f;
     self.titleHeight = 30.0f;
     [self registerClass:[BHEmblemView class] forDecorationViewOfKind:BHPhotoEmblemKind];
@@ -116,16 +113,20 @@ static NSString * const BHPhotoEmblemKind = @"Emblem";
     NSMutableDictionary *titleLayoutInfoDict = [NSMutableDictionary dictionary];
     
     
-    NSIndexPath *indexPath = [NSIndexPath indexPathForItem:0 inSection:0];
+    NSIndexPath *initialIndexPath = [NSIndexPath indexPathForItem:0 inSection:0];
     UICollectionViewLayoutAttributes *emblemAttributes = [UICollectionViewLayoutAttributes
-                                                          layoutAttributesForDecorationViewOfKind:BHPhotoEmblemKind withIndexPath:indexPath];
+                                                          layoutAttributesForDecorationViewOfKind:BHPhotoEmblemKind withIndexPath:initialIndexPath];
     emblemAttributes.frame = [self frameForDecorative];
-    newLayoutInfoDict[BHPhotoEmblemKind] = @{indexPath: emblemAttributes};
+    newLayoutInfoDict[BHPhotoEmblemKind] = @{initialIndexPath: emblemAttributes};
     
     
     NSInteger itemCount = [self.collectionView numberOfItemsInSection:0];
+    CGFloat heightOfContent = 0.0f;
     for (NSInteger item = 0; item < itemCount; item++) {
-        indexPath = [NSIndexPath indexPathForItem:item inSection:0];
+
+        NSIndexPath *indexPath = [NSIndexPath indexPathForItem:item inSection:0];
+        CGSize itemSize = [self.delegate collectionView:self.collectionView layout:self sizeForItemAtIndexPath:indexPath];
+        heightOfContent = heightOfContent + itemSize.height;
 
         // -------- ITEM ATTRIBUTE CALLCULATION --------- //
         UICollectionViewLayoutAttributes *itemAttributes =
@@ -158,10 +159,9 @@ static NSString * const BHPhotoEmblemKind = @"Emblem";
     
     // -------- CONTENT SIZE CALCULATIONS ------------ //
     NSInteger rowCount = [self.collectionView numberOfItemsInSection:0];
-    CGFloat height = self.itemInsets.top + rowCount * self.itemSize.height +
-                     (rowCount - 1) * self.interItemSpacingY + rowCount * self.titleHeight +
-    self.itemInsets.bottom;
     
+    CGFloat height = self.itemInsets.top + heightOfContent +
+                     (rowCount - 1) * self.interItemSpacingY + rowCount * self.titleHeight + self.itemInsets.bottom;
     self.currentContentSize = CGSizeMake(self.collectionView.bounds.size.width, height);
 }
 
@@ -200,14 +200,15 @@ static NSString * const BHPhotoEmblemKind = @"Emblem";
     return NO;
 }
 
-#pragma mark - Private
+#pragma mark - Private methods
 - (CGRect)frameForItemAtIndexPath:(NSIndexPath *)indexPath;
 {
+    CGSize itemSize = [self.delegate collectionView:self.collectionView layout:self sizeForItemAtIndexPath:indexPath];
     NSInteger row = indexPath.item;
     CGFloat originY = floor(self.itemInsets.top +
-                      (self.itemSize.height + self.titleHeight + self.interItemSpacingY) * row);
+                      (itemSize.height + self.titleHeight + self.interItemSpacingY) * row);
     
-    CGRect rect = CGRectMake(self.itemInsets.left, originY, self.itemSize.width, self.itemSize.height);
+    CGRect rect = CGRectMake(self.itemInsets.left, originY, itemSize.width, itemSize.height);
     return rect;
 }
 
