@@ -115,34 +115,30 @@ static NSString * const BHPhotoEmblemKind = @"Emblem";
     NSMutableDictionary *cellLayoutInfoDict  = [NSMutableDictionary dictionary];
     NSMutableDictionary *titleLayoutInfoDict = [NSMutableDictionary dictionary];
     
-    NSInteger sectionCount = [self.collectionView numberOfSections];
-    NSIndexPath *indexPath = [NSIndexPath indexPathForItem:0 inSection:0];
     
+    NSIndexPath *indexPath = [NSIndexPath indexPathForItem:0 inSection:0];
     UICollectionViewLayoutAttributes *emblemAttributes = [UICollectionViewLayoutAttributes
                                                           layoutAttributesForDecorationViewOfKind:BHPhotoEmblemKind withIndexPath:indexPath];
     emblemAttributes.frame = [self frameForEmblem];
-    
     newLayoutInfoDict[BHPhotoEmblemKind] = @{indexPath: emblemAttributes};
     
-    for (NSInteger section = 0; section < sectionCount; section++) {
-        NSInteger itemCount = [self.collectionView numberOfItemsInSection:section];
+    
+    NSInteger itemCount = [self.collectionView numberOfItemsInSection:0];
+    for (NSInteger item = 0; item < itemCount; item++) {
+        indexPath = [NSIndexPath indexPathForItem:item inSection:0];
         
-        for (NSInteger item = 0; item < itemCount; item++) {
-            indexPath = [NSIndexPath indexPathForItem:item inSection:section];
+        UICollectionViewLayoutAttributes *itemAttributes =
+        [UICollectionViewLayoutAttributes layoutAttributesForCellWithIndexPath:indexPath];
+        itemAttributes.frame = [self frameForAlbumPhotoAtIndexPath:indexPath];
+        
+        cellLayoutInfoDict[indexPath] = itemAttributes;
+        
+        if (indexPath.item == 0) {
+            UICollectionViewLayoutAttributes *titleAttributes =
+            [UICollectionViewLayoutAttributes layoutAttributesForSupplementaryViewOfKind:BHPhotoAlbumLayoutAlbumTitleKind withIndexPath:indexPath];
+            titleAttributes.frame = [self frameForAlbumTitleAtIndexPath:indexPath];
             
-            UICollectionViewLayoutAttributes *itemAttributes =
-                [UICollectionViewLayoutAttributes layoutAttributesForCellWithIndexPath:indexPath];
-            itemAttributes.frame = [self frameForAlbumPhotoAtIndexPath:indexPath];
-            
-            cellLayoutInfoDict[indexPath] = itemAttributes;
-            
-            if (indexPath.item == 0) {
-                UICollectionViewLayoutAttributes *titleAttributes =
-                    [UICollectionViewLayoutAttributes layoutAttributesForSupplementaryViewOfKind:BHPhotoAlbumLayoutAlbumTitleKind withIndexPath:indexPath];
-                titleAttributes.frame = [self frameForAlbumTitleAtIndexPath:indexPath];
-                
-                titleLayoutInfoDict[indexPath] = titleAttributes;
-            }
+            titleLayoutInfoDict[indexPath] = titleAttributes;
         }
     }
     
