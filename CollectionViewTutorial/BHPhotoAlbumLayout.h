@@ -17,7 +17,7 @@ extern NSString * const BHPhotoAlbumLayoutAlbumTitleKind;
 
 - (CGSize)collectionView:(UICollectionView *)collectionView layout:(BHPhotoAlbumLayout *)collectionViewLayout sizeForItemAtIndexPath:(NSIndexPath *)indexPath;
 
-//- (BOOL)collectionView:(UICollectionView *)collectionView layout:(BHPhotoAlbumLayout *)collectionViewLayout sizeForHeaderAtIndexPath:(NSIndexPath *)indexPath;
+- (BOOL)collectionView:(UICollectionView *)collectionView layout:(BHPhotoAlbumLayout *)collectionViewLayout shouldShowDateHeaderAtIndexPath:(NSIndexPath *)indexPath;
 
 @end
 
