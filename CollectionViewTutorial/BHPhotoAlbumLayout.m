@@ -19,11 +19,12 @@ static NSString * const BHPhotoEmblemKind = @"Emblem";
 @property (nonatomic, strong) NSDictionary *layoutInfoDict;
 
 @property (nonatomic, assign) CGSize currentContentSize;
+@property (nonatomic, assign) CGFloat totalOriginYCalculation;
 
 @property (nonatomic, weak) id <GRCollectionViewDelegateLayout> delegate;
 
-- (CGRect)frameForItemAtIndexPath:(NSIndexPath *)indexPath;
-- (CGRect)frameForSuplementaryAtIndexPath:(NSIndexPath *)indexPath;
+- (CGRect)frameForItemAtIndexPath:(NSIndexPath *)indexPath forCellItemSize:(CGSize )cellSize;
+- (CGRect)frameForSuplementaryAtIndexPath:(NSIndexPath *)indexPath forCellItemSize:(CGSize )cellSize;
 - (CGRect)frameForDecorative;
 
 @end
@@ -97,7 +98,7 @@ static NSString * const BHPhotoEmblemKind = @"Emblem";
 
 - (void)setup
 {
-    self.itemInsets = UIEdgeInsetsMake(22.0f, 22.0f, 13.0f, 22.0f);
+    self.itemInsets = UIEdgeInsetsMake(22.0f, 22.0f, 130.0f, 22.0f);
     self.interItemSpacingY = 20.0f;
     self.titleHeight = 30.0f;
     [self registerClass:[BHEmblemView class] forDecorationViewOfKind:BHPhotoEmblemKind];
@@ -108,21 +109,23 @@ static NSString * const BHPhotoEmblemKind = @"Emblem";
 
 - (void)prepareLayout
 {
+    self.totalOriginYCalculation = self.itemInsets.top;
+    
     NSMutableDictionary *newLayoutInfoDict   = [NSMutableDictionary dictionary];
     NSMutableDictionary *cellLayoutInfoDict  = [NSMutableDictionary dictionary];
     NSMutableDictionary *titleLayoutInfoDict = [NSMutableDictionary dictionary];
     
-    
-    NSIndexPath *initialIndexPath = [NSIndexPath indexPathForItem:0 inSection:0];
+
+    NSIndexPath *decorativeIndexPath = [NSIndexPath indexPathForItem:0 inSection:0];
     UICollectionViewLayoutAttributes *emblemAttributes = [UICollectionViewLayoutAttributes
-                                                          layoutAttributesForDecorationViewOfKind:BHPhotoEmblemKind withIndexPath:initialIndexPath];
+                                                          layoutAttributesForDecorationViewOfKind:BHPhotoEmblemKind withIndexPath:decorativeIndexPath];
     emblemAttributes.frame = [self frameForDecorative];
-    newLayoutInfoDict[BHPhotoEmblemKind] = @{initialIndexPath: emblemAttributes};
+    newLayoutInfoDict[BHPhotoEmblemKind] = @{decorativeIndexPath: emblemAttributes};
     
     
     NSInteger itemCount = [self.collectionView numberOfItemsInSection:0];
     CGFloat heightOfContent = 0.0f;
-    for (NSInteger item = 0; item < itemCount; item++) {
+    for (NSInteger item = 0; item < itemCount; item ++) {
 
         NSIndexPath *indexPath = [NSIndexPath indexPathForItem:item inSection:0];
         CGSize itemSize = [self.delegate collectionView:self.collectionView layout:self sizeForItemAtIndexPath:indexPath];
@@ -131,14 +134,13 @@ static NSString * const BHPhotoEmblemKind = @"Emblem";
         // -------- ITEM ATTRIBUTE CALLCULATION --------- //
         UICollectionViewLayoutAttributes *itemAttributes =
         [UICollectionViewLayoutAttributes layoutAttributesForCellWithIndexPath:indexPath];
-        itemAttributes.frame = [self frameForItemAtIndexPath:indexPath];
-        
+        itemAttributes.frame = [self frameForItemAtIndexPath:indexPath forCellItemSize:itemSize];
         cellLayoutInfoDict[indexPath] = itemAttributes;
         
         // -------- SUPLEMENTARY ATTRIBUTE CALLCULATION ------------ //
         UICollectionViewLayoutAttributes *titleAttributes =
         [UICollectionViewLayoutAttributes layoutAttributesForSupplementaryViewOfKind:BHPhotoAlbumLayoutAlbumTitleKind withIndexPath:indexPath];
-        titleAttributes.frame = [self frameForSuplementaryAtIndexPath:indexPath];
+        titleAttributes.frame = [self frameForSuplementaryAtIndexPath:indexPath forCellItemSize:itemSize];
         titleLayoutInfoDict[indexPath] = titleAttributes;
     }
     
@@ -161,7 +163,8 @@ static NSString * const BHPhotoEmblemKind = @"Emblem";
     NSInteger rowCount = [self.collectionView numberOfItemsInSection:0];
     
     CGFloat height = self.itemInsets.top + heightOfContent +
-                     (rowCount - 1) * self.interItemSpacingY + rowCount * self.titleHeight + self.itemInsets.bottom;
+                     (rowCount - 1) * self.interItemSpacingY +
+                     rowCount * self.titleHeight + self.itemInsets.bottom;
     self.currentContentSize = CGSizeMake(self.collectionView.bounds.size.width, height);
 }
 
@@ -201,24 +204,27 @@ static NSString * const BHPhotoEmblemKind = @"Emblem";
 }
 
 #pragma mark - Private methods
-- (CGRect)frameForItemAtIndexPath:(NSIndexPath *)indexPath;
+- (CGRect)frameForItemAtIndexPath:(NSIndexPath *)indexPath forCellItemSize:(CGSize )cellSize;
 {
-    CGSize itemSize = [self.delegate collectionView:self.collectionView layout:self sizeForItemAtIndexPath:indexPath];
-    NSInteger row = indexPath.item;
-    CGFloat originY = floor(self.itemInsets.top +
-                      (itemSize.height + self.titleHeight + self.interItemSpacingY) * row);
+    CGRect cellFrame      = CGRectZero;
+    cellFrame.origin.x    = self.itemInsets.left;
+    cellFrame.origin.y    = self.totalOriginYCalculation;
+    cellFrame.size.width  = cellSize.width;
+    cellFrame.size.height = cellSize.height;
     
-    CGRect rect = CGRectMake(self.itemInsets.left, originY, itemSize.width, itemSize.height);
-    return rect;
+    self.totalOriginYCalculation += floor(cellSize.height);
+    return cellFrame;
 }
 
-- (CGRect)frameForSuplementaryAtIndexPath:(NSIndexPath *)indexPath;
+- (CGRect)frameForSuplementaryAtIndexPath:(NSIndexPath *)indexPath forCellItemSize:(CGSize )cellSize;
 {
-    CGRect frame = [self frameForItemAtIndexPath:indexPath];
-    
-    frame.origin.y += frame.size.height;
-    frame.size.height = self.titleHeight;
-    return frame;
+    CGRect suplementaryFrame      = CGRectZero;
+    suplementaryFrame.origin.x    = self.itemInsets.left;
+    suplementaryFrame.origin.y    = self.totalOriginYCalculation;
+    suplementaryFrame.size.width  = cellSize.width;
+    suplementaryFrame.size.height = self.titleHeight;
+    self.totalOriginYCalculation += self.titleHeight + self.interItemSpacingY;
+    return suplementaryFrame;
 }
 
 - (CGRect)frameForDecorative;

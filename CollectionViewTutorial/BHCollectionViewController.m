@@ -48,6 +48,9 @@ static NSString * const AlbumTitleIdentifier = @"AlbumTitle";
 {
     [super viewDidLoad];
     [self.view addSubview:self.collectionView];
+    self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemTrash target:self action:@selector(removeObjectFromCollectionView:)];
+    self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemAdd target:self action:@selector(addObjectToCollectionView:)];
+    
     self.albums = [NSMutableArray array];
     NSURL *urlPrefix = [NSURL URLWithString:@"https://raw.github.com/ShadoFlameX/PhotoCollectionView/master/Photos/"];
     NSInteger photoIndex = 0;
@@ -70,6 +73,17 @@ static NSString * const AlbumTitleIdentifier = @"AlbumTitle";
 - (void)didReceiveMemoryWarning
 {
     [super didReceiveMemoryWarning];
+}
+
+#pragma mark - Private
+- (void)removeObjectFromCollectionView:(id)sener
+{
+    NSLog(@"removeObjectFromCollectionView:");
+}
+
+- (void)addObjectToCollectionView:(id)sender
+{
+    NSLog(@"addObjectToCollectionView:");
 }
 
 #pragma mark - View Rotation
@@ -99,6 +113,7 @@ static NSString * const AlbumTitleIdentifier = @"AlbumTitle";
     BHAlbumPhotoCell *photoCell =
         [collectionView dequeueReusableCellWithReuseIdentifier:PhotoCellIdentifier
                                                   forIndexPath:indexPath];
+    photoCell.cellLabel.text = [NSString stringWithFormat:@" cell index = %@",@(indexPath.item)];
     return photoCell;
 }
 
@@ -110,7 +125,7 @@ static NSString * const AlbumTitleIdentifier = @"AlbumTitle";
         [collectionView dequeueReusableSupplementaryViewOfKind:kind
                                            withReuseIdentifier:AlbumTitleIdentifier
                                                   forIndexPath:indexPath];
-    titleView.titleLabel.text = @"test test";
+    titleView.titleLabel.text = [NSString stringWithFormat:@"suplementary index = %@",@(indexPath.item)];
     return titleView;
 }
 
@@ -118,8 +133,7 @@ static NSString * const AlbumTitleIdentifier = @"AlbumTitle";
                   layout:(UICollectionViewLayout*)collectionViewLayout
   sizeForItemAtIndexPath:(NSIndexPath *)indexPath
 {
-    //return CGSizeMake(200, arc4random()%300 + 1);
-    return CGSizeMake(200, 200);
+    return CGSizeMake(200, arc4random()%300 + 70);
 }
 
 @end

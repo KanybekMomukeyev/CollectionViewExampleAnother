@@ -10,9 +10,8 @@
 #import <QuartzCore/QuartzCore.h>
 
 @interface BHAlbumPhotoCell ()
-
 @property (nonatomic, strong, readwrite) UIImageView *imageView;
-
+@property (nonatomic, strong, readwrite) UILabel *cellLabel;
 @end
 
 @implementation BHAlbumPhotoCell
@@ -39,7 +38,11 @@
         self.imageView.contentMode = UIViewContentModeScaleAspectFill;
         self.imageView.clipsToBounds = YES;
         
+        self.cellLabel = [[UILabel alloc] initWithFrame:self.bounds];
+        self.cellLabel.textAlignment = NSTextAlignmentCenter;
+
         [self.contentView addSubview:self.imageView];
+        [self.contentView addSubview:self.cellLabel];
     }
 
     return self;
@@ -48,7 +51,6 @@
 - (void)prepareForReuse
 {
     [super prepareForReuse];
-    
     self.imageView.image = nil;
 }
 
