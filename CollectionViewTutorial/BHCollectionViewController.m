@@ -129,11 +129,20 @@ static NSString * const AlbumTitleIdentifier = @"AlbumTitle";
     return titleView;
 }
 
+#pragma mark - GRCollectionViewDelegateLayout
 - (CGSize)collectionView:(UICollectionView *)collectionView
                   layout:(UICollectionViewLayout*)collectionViewLayout
   sizeForItemAtIndexPath:(NSIndexPath *)indexPath
 {
     return CGSizeMake(200, arc4random()%300 + 70);
+}
+
+- (BOOL)collectionView:(UICollectionView *)collectionView layout:(BHPhotoAlbumLayout *)collectionViewLayout shouldShowDateHeaderAtIndexPath:(NSIndexPath *)indexPath
+{
+    if ((indexPath.row % 3) == 0) {
+        return YES;
+    }
+    return NO;
 }
 
 @end

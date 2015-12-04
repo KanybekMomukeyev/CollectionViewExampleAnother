@@ -9,7 +9,5 @@
 #import <UIKit/UIKit.h>
 
 @interface BHAlbumTitleReusableView : UICollectionReusableView
-
 @property (nonatomic, strong, readonly) UILabel *titleLabel;
-
 @end

@@ -98,9 +98,9 @@ static NSString * const BHPhotoEmblemKind = @"Emblem";
 
 - (void)setup
 {
-    self.itemInsets = UIEdgeInsetsMake(22.0f, 22.0f, 130.0f, 22.0f);
     self.interItemSpacingY = 20.0f;
     self.titleHeight = 30.0f;
+    self.itemInsets = UIEdgeInsetsMake((22.0f + self.titleHeight), 22.0f, 130.0f, 22.0f);
     [self registerClass:[BHEmblemView class] forDecorationViewOfKind:BHPhotoEmblemKind];
 }
 
@@ -138,10 +138,16 @@ static NSString * const BHPhotoEmblemKind = @"Emblem";
         cellLayoutInfoDict[indexPath] = itemAttributes;
         
         // -------- SUPLEMENTARY ATTRIBUTE CALLCULATION ------------ //
-        UICollectionViewLayoutAttributes *titleAttributes =
-        [UICollectionViewLayoutAttributes layoutAttributesForSupplementaryViewOfKind:BHPhotoAlbumLayoutAlbumTitleKind withIndexPath:indexPath];
-        titleAttributes.frame = [self frameForSuplementaryAtIndexPath:indexPath forCellItemSize:itemSize];
-        titleLayoutInfoDict[indexPath] = titleAttributes;
+        BOOL shouldShowDateHeader = [self.delegate collectionView:self.collectionView
+                                                           layout:self
+                                  shouldShowDateHeaderAtIndexPath:indexPath];
+        //if (shouldShowDateHeader)
+        //{
+            UICollectionViewLayoutAttributes *titleAttributes =
+            [UICollectionViewLayoutAttributes layoutAttributesForSupplementaryViewOfKind:BHPhotoAlbumLayoutAlbumTitleKind withIndexPath:indexPath];
+            titleAttributes.frame = [self frameForSuplementaryAtIndexPath:indexPath forCellItemSize:itemSize];
+            titleLayoutInfoDict[indexPath] = titleAttributes;
+        //}
     }
     
     newLayoutInfoDict[BHPhotoAlbumLayoutPhotoCellKind]  =  cellLayoutInfoDict;
@@ -220,7 +226,7 @@ static NSString * const BHPhotoEmblemKind = @"Emblem";
 {
     CGRect suplementaryFrame      = CGRectZero;
     suplementaryFrame.origin.x    = self.itemInsets.left;
-    suplementaryFrame.origin.y    = self.totalOriginYCalculation;
+    suplementaryFrame.origin.y    = (self.totalOriginYCalculation - cellSize.height - self.titleHeight);
     suplementaryFrame.size.width  = cellSize.width;
     suplementaryFrame.size.height = self.titleHeight;
     self.totalOriginYCalculation += self.titleHeight + self.interItemSpacingY;

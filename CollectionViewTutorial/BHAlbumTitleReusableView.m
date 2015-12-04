@@ -9,9 +9,7 @@
 #import "BHAlbumTitleReusableView.h"
 
 @interface BHAlbumTitleReusableView ()
-
 @property (nonatomic, strong, readwrite) UILabel *titleLabel;
-
 @end
 
 @implementation BHAlbumTitleReusableView
@@ -29,7 +27,8 @@
         self.titleLabel.textColor = [UIColor colorWithWhite:1.0f alpha:1.0f];
         self.titleLabel.shadowColor = [UIColor colorWithWhite:0.0f alpha:0.3f];
         self.titleLabel.shadowOffset = CGSizeMake(0.0f, 1.0f);
-        
+        self.titleLabel.layer.borderColor = [UIColor blueColor].CGColor;
+        self.titleLabel.layer.borderWidth = 2.0f;
         [self addSubview:self.titleLabel];
     }
     return self;
@@ -38,7 +37,6 @@
 - (void)prepareForReuse
 {
     [super prepareForReuse];
-    
     self.titleLabel.text = nil;
 }
 
